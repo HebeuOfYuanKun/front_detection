@@ -1,0 +1,184 @@
+<!DOCTYPE html><html><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge,chrome=1"><meta name=renderer content=webkit><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><link rel=icon href=/web/logo.ico><title>Ai-Detection</title><!--[if lt IE 11]><script>window.location.href='/html/ie.html';</script><![endif]--><style>html,
+    body,
+    #app {
+      height: 100%;
+      margin: 0px;
+      padding: 0px;
+    }
+    .chromeframe {
+      margin: 0.2em 0;
+      background: #ccc;
+      color: #000;
+      padding: 0.2em 0;
+    }
+
+    #loader-wrapper {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 999999;
+    }
+
+    #loader {
+      display: block;
+      position: relative;
+      left: 50%;
+      top: 50%;
+      width: 150px;
+      height: 150px;
+      margin: -75px 0 0 -75px;
+      border-radius: 50%;
+      border: 3px solid transparent;
+      border-top-color: #FFF;
+      -webkit-animation: spin 2s linear infinite;
+      -ms-animation: spin 2s linear infinite;
+      -moz-animation: spin 2s linear infinite;
+      -o-animation: spin 2s linear infinite;
+      animation: spin 2s linear infinite;
+      z-index: 1001;
+    }
+
+    #loader:before {
+      content: "";
+      position: absolute;
+      top: 5px;
+      left: 5px;
+      right: 5px;
+      bottom: 5px;
+      border-radius: 50%;
+      border: 3px solid transparent;
+      border-top-color: #FFF;
+      -webkit-animation: spin 3s linear infinite;
+      -moz-animation: spin 3s linear infinite;
+      -o-animation: spin 3s linear infinite;
+      -ms-animation: spin 3s linear infinite;
+      animation: spin 3s linear infinite;
+    }
+
+    #loader:after {
+      content: "";
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      right: 15px;
+      bottom: 15px;
+      border-radius: 50%;
+      border: 3px solid transparent;
+      border-top-color: #FFF;
+      -moz-animation: spin 1.5s linear infinite;
+      -o-animation: spin 1.5s linear infinite;
+      -ms-animation: spin 1.5s linear infinite;
+      -webkit-animation: spin 1.5s linear infinite;
+      animation: spin 1.5s linear infinite;
+    }
+
+
+    @-webkit-keyframes spin {
+      0% {
+        -webkit-transform: rotate(0deg);
+        -ms-transform: rotate(0deg);
+        transform: rotate(0deg);
+      }
+      100% {
+        -webkit-transform: rotate(360deg);
+        -ms-transform: rotate(360deg);
+        transform: rotate(360deg);
+      }
+    }
+
+    @keyframes spin {
+      0% {
+        -webkit-transform: rotate(0deg);
+        -ms-transform: rotate(0deg);
+        transform: rotate(0deg);
+      }
+      100% {
+        -webkit-transform: rotate(360deg);
+        -ms-transform: rotate(360deg);
+        transform: rotate(360deg);
+      }
+    }
+
+
+    #loader-wrapper .loader-section {
+      position: fixed;
+      top: 0;
+      width: 51%;
+      height: 100%;
+      background: #7171C6;
+      z-index: 1000;
+      -webkit-transform: translateX(0);
+      -ms-transform: translateX(0);
+      transform: translateX(0);
+    }
+
+    #loader-wrapper .loader-section.section-left {
+      left: 0;
+    }
+
+    #loader-wrapper .loader-section.section-right {
+      right: 0;
+    }
+
+
+    .loaded #loader-wrapper .loader-section.section-left {
+      -webkit-transform: translateX(-100%);
+      -ms-transform: translateX(-100%);
+      transform: translateX(-100%);
+      -webkit-transition: all 0.7s 0.3s cubic-bezier(0.645, 0.045, 0.355, 1.000);
+      transition: all 0.7s 0.3s cubic-bezier(0.645, 0.045, 0.355, 1.000);
+    }
+
+    .loaded #loader-wrapper .loader-section.section-right {
+      -webkit-transform: translateX(100%);
+      -ms-transform: translateX(100%);
+      transform: translateX(100%);
+      -webkit-transition: all 0.7s 0.3s cubic-bezier(0.645, 0.045, 0.355, 1.000);
+      transition: all 0.7s 0.3s cubic-bezier(0.645, 0.045, 0.355, 1.000);
+    }
+
+    .loaded #loader {
+      opacity: 0;
+      -webkit-transition: all 0.3s ease-out;
+      transition: all 0.3s ease-out;
+    }
+
+    .loaded #loader-wrapper {
+      visibility: hidden;
+      -webkit-transform: translateY(-100%);
+      -ms-transform: translateY(-100%);
+      transform: translateY(-100%);
+      -webkit-transition: all 0.3s 1s ease-out;
+      transition: all 0.3s 1s ease-out;
+    }
+
+    .no-js #loader-wrapper {
+      display: none;
+    }
+
+    .no-js h1 {
+      color: #222222;
+    }
+
+    #loader-wrapper .load_title {
+      font-family: 'Open Sans';
+      color: #FFF;
+      font-size: 19px;
+      width: 100%;
+      text-align: center;
+      z-index: 9999999999999;
+      position: absolute;
+      top: 60%;
+      opacity: 1;
+      line-height: 30px;
+    }
+
+    #loader-wrapper .load_title span {
+      font-weight: normal;
+      font-style: italic;
+      font-size: 13px;
+      color: #FFF;
+      opacity: 0.5;
+    }</style><link href=/web/static/css/chunk-libs.31440d52.css rel=stylesheet><link href=/web/static/css/app.22e3ea92.css rel=stylesheet></head><body><div id=app><div id=loader-wrapper><div id=loader></div><div class="loader-section section-left"></div><div class="loader-section section-right"></div><div class=load_title>正在加载系统资源，请耐心等待</div></div></div><script>(function(c){function e(e){for(var u,d,h=e[0],t=e[1],k=e[2],r=0,b=[];r<h.length;r++)d=h[r],Object.prototype.hasOwnProperty.call(f,d)&&f[d]&&b.push(f[d][0]),f[d]=0;for(u in t)Object.prototype.hasOwnProperty.call(t,u)&&(c[u]=t[u]);o&&o(e);while(b.length)b.shift()();return a.push.apply(a,k||[]),n()}function n(){for(var c,e=0;e<a.length;e++){for(var n=a[e],u=!0,d=1;d<n.length;d++){var h=n[d];0!==f[h]&&(u=!1)}u&&(a.splice(e--,1),c=t(t.s=n[0]))}return c}var u={},d={runtime:0},f={runtime:0},a=[];function h(c){return t.p+"static/js/"+({}[c]||c)+"."+{"chunk-005cb0c7":"e695b551","chunk-04621586":"460100f5","chunk-210ca3e9":"ca2d80e2","chunk-210ce324":"7d79bf2f","chunk-2727631f":"1859462d","chunk-293b08d7":"66c6e5ca","chunk-2d0b1626":"1573fd0d","chunk-2d0b2b28":"9e271da6","chunk-994fa942":"b3b6765a","chunk-2d0bce05":"c29a7378","chunk-2d0c85b6":"75153431","chunk-2d0c8e18":"11680306","chunk-2d0da2ea":"095cfba6","chunk-2d0e2366":"00afd6b9","chunk-0aadf7dc":"8515711b","chunk-a0fb3e3e":"fe167c52","chunk-2d0f012d":"ddeb06bb","chunk-2d20955d":"be0712e3","chunk-2d212b99":"eadf8bea","chunk-4d97fe92":"a8de0875","chunk-31eae13f":"b3a355d1","chunk-3339808c":"844fa647","chunk-0d5b0085":"01233448","chunk-60006966":"896a177a","chunk-97b0a1ce":"9a45aa3c","chunk-2d21a3bb":"b78e776d","chunk-2d21da18":"53dcb820","chunk-2d22252c":"6ce6923b","chunk-2d2244c0":"f580fda2","chunk-2d230898":"c7aeb977","chunk-39413ce8":"5c2bbb52","chunk-3a08d90c":"701c18a4","chunk-3b69bc00":"97cb0649","chunk-3c64afac":"a8582970","chunk-46f2cf5c":"1c32f32e","chunk-4a92a268":"aaa849fa","chunk-023a0b28":"95f91082","chunk-0f7114d8":"3ea51b8e","chunk-2b02de32":"e0b112d6","chunk-4868c644":"6b5e7034","chunk-60943f35":"ee68a99f","chunk-7dc7eab6":"d03e78b6","chunk-b3cd5d88":"46668bff","chunk-4f55a4ac":"fa68f303","chunk-582b2a7a":"a89943dd","chunk-5b83c289":"3100c7ad","chunk-7fa21b9b":"76bd2d8c","chunk-5bb73842":"e38b5053","chunk-2d0d38ff":"995ab020","chunk-2d0de3b1":"ee70ca96","chunk-548b6580":"7531e015","chunk-4aebf114":"14f39251","chunk-59b6a8ac":"1aab1224","chunk-5d18cef0":"678bac65","chunk-0df5905f":"5691fb5c","chunk-f09de4ca":"c52fe467","chunk-39f641ea":"3e236afc","chunk-61408335":"540f3e59","chunk-6746b265":"44c6cd79","chunk-68702101":"8d177a00","chunk-7e203972":"33b47258","chunk-8579d4da":"af453cff","chunk-8ee3fc10":"f8a0d62b","chunk-d19c1a98":"825258bd","chunk-e1a6d904":"25d20ad0","chunk-e3ffee56":"fb72068a","chunk-e648d5fe":"f22de8b2","chunk-e946381e":"1b237337","chunk-f68bbee2":"8bb2d0c1"}[c]+".js"}function t(e){if(u[e])return u[e].exports;var n=u[e]={i:e,l:!1,exports:{}};return c[e].call(n.exports,n,n.exports,t),n.l=!0,n.exports}t.e=function(c){var e=[],n={"chunk-293b08d7":1,"chunk-994fa942":1,"chunk-0aadf7dc":1,"chunk-a0fb3e3e":1,"chunk-3339808c":1,"chunk-97b0a1ce":1,"chunk-3c64afac":1,"chunk-46f2cf5c":1,"chunk-b3cd5d88":1,"chunk-4f55a4ac":1,"chunk-5b83c289":1,"chunk-5bb73842":1,"chunk-59b6a8ac":1,"chunk-39f641ea":1,"chunk-61408335":1,"chunk-6746b265":1,"chunk-e648d5fe":1};d[c]?e.push(d[c]):0!==d[c]&&n[c]&&e.push(d[c]=new Promise((function(e,n){for(var u="static/css/"+({}[c]||c)+"."+{"chunk-005cb0c7":"31d6cfe0","chunk-04621586":"31d6cfe0","chunk-210ca3e9":"31d6cfe0","chunk-210ce324":"31d6cfe0","chunk-2727631f":"31d6cfe0","chunk-293b08d7":"c217863a","chunk-2d0b1626":"31d6cfe0","chunk-2d0b2b28":"31d6cfe0","chunk-994fa942":"1ad2e453","chunk-2d0bce05":"31d6cfe0","chunk-2d0c85b6":"31d6cfe0","chunk-2d0c8e18":"31d6cfe0","chunk-2d0da2ea":"31d6cfe0","chunk-2d0e2366":"31d6cfe0","chunk-0aadf7dc":"c621826b","chunk-a0fb3e3e":"c621826b","chunk-2d0f012d":"31d6cfe0","chunk-2d20955d":"31d6cfe0","chunk-2d212b99":"31d6cfe0","chunk-4d97fe92":"31d6cfe0","chunk-31eae13f":"31d6cfe0","chunk-3339808c":"6dfe926d","chunk-0d5b0085":"31d6cfe0","chunk-60006966":"31d6cfe0","chunk-97b0a1ce":"4b262291","chunk-2d21a3bb":"31d6cfe0","chunk-2d21da18":"31d6cfe0","chunk-2d22252c":"31d6cfe0","chunk-2d2244c0":"31d6cfe0","chunk-2d230898":"31d6cfe0","chunk-39413ce8":"31d6cfe0","chunk-3a08d90c":"31d6cfe0","chunk-3b69bc00":"31d6cfe0","chunk-3c64afac":"4e8637e7","chunk-46f2cf5c":"17fbdb6b","chunk-4a92a268":"31d6cfe0","chunk-023a0b28":"31d6cfe0","chunk-0f7114d8":"31d6cfe0","chunk-2b02de32":"31d6cfe0","chunk-4868c644":"31d6cfe0","chunk-60943f35":"31d6cfe0","chunk-7dc7eab6":"31d6cfe0","chunk-b3cd5d88":"74496202","chunk-4f55a4ac":"5a402cd2","chunk-582b2a7a":"31d6cfe0","chunk-5b83c289":"ce2a2394","chunk-7fa21b9b":"31d6cfe0","chunk-5bb73842":"84f98409","chunk-2d0d38ff":"31d6cfe0","chunk-2d0de3b1":"31d6cfe0","chunk-548b6580":"31d6cfe0","chunk-4aebf114":"31d6cfe0","chunk-59b6a8ac":"793cbdf1","chunk-5d18cef0":"31d6cfe0","chunk-0df5905f":"31d6cfe0","chunk-f09de4ca":"31d6cfe0","chunk-39f641ea":"3b38f144","chunk-61408335":"a00b75fd","chunk-6746b265":"3e10cd59","chunk-68702101":"31d6cfe0","chunk-7e203972":"31d6cfe0","chunk-8579d4da":"31d6cfe0","chunk-8ee3fc10":"31d6cfe0","chunk-d19c1a98":"31d6cfe0","chunk-e1a6d904":"31d6cfe0","chunk-e3ffee56":"31d6cfe0","chunk-e648d5fe":"bbc9fa95","chunk-e946381e":"31d6cfe0","chunk-f68bbee2":"31d6cfe0"}[c]+".css",f=t.p+u,a=document.getElementsByTagName("link"),h=0;h<a.length;h++){var k=a[h],r=k.getAttribute("data-href")||k.getAttribute("href");if("stylesheet"===k.rel&&(r===u||r===f))return e()}var b=document.getElementsByTagName("style");for(h=0;h<b.length;h++){k=b[h],r=k.getAttribute("data-href");if(r===u||r===f)return e()}var o=document.createElement("link");o.rel="stylesheet",o.type="text/css",o.onload=e,o.onerror=function(e){var u=e&&e.target&&e.target.src||f,a=new Error("Loading CSS chunk "+c+" failed.\n("+u+")");a.code="CSS_CHUNK_LOAD_FAILED",a.request=u,delete d[c],o.parentNode.removeChild(o),n(a)},o.href=f;var i=document.getElementsByTagName("head")[0];i.appendChild(o)})).then((function(){d[c]=0})));var u=f[c];if(0!==u)if(u)e.push(u[2]);else{var a=new Promise((function(e,n){u=f[c]=[e,n]}));e.push(u[2]=a);var k,r=document.createElement("script");r.charset="utf-8",r.timeout=120,t.nc&&r.setAttribute("nonce",t.nc),r.src=h(c);var b=new Error;k=function(e){r.onerror=r.onload=null,clearTimeout(o);var n=f[c];if(0!==n){if(n){var u=e&&("load"===e.type?"missing":e.type),d=e&&e.target&&e.target.src;b.message="Loading chunk "+c+" failed.\n("+u+": "+d+")",b.name="ChunkLoadError",b.type=u,b.request=d,n[1](b)}f[c]=void 0}};var o=setTimeout((function(){k({type:"timeout",target:r})}),12e4);r.onerror=r.onload=k,document.head.appendChild(r)}return Promise.all(e)},t.m=c,t.c=u,t.d=function(c,e,n){t.o(c,e)||Object.defineProperty(c,e,{enumerable:!0,get:n})},t.r=function(c){"undefined"!==typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(c,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(c,"__esModule",{value:!0})},t.t=function(c,e){if(1&e&&(c=t(c)),8&e)return c;if(4&e&&"object"===typeof c&&c&&c.__esModule)return c;var n=Object.create(null);if(t.r(n),Object.defineProperty(n,"default",{enumerable:!0,value:c}),2&e&&"string"!=typeof c)for(var u in c)t.d(n,u,function(e){return c[e]}.bind(null,u));return n},t.n=function(c){var e=c&&c.__esModule?function(){return c["default"]}:function(){return c};return t.d(e,"a",e),e},t.o=function(c,e){return Object.prototype.hasOwnProperty.call(c,e)},t.p="/web/",t.oe=function(c){throw console.error(c),c};var k=window["webpackJsonp"]=window["webpackJsonp"]||[],r=k.push.bind(k);k.push=e,k=k.slice();for(var b=0;b<k.length;b++)e(k[b]);var o=r;n()})([]);</script><script src=/web/static/js/chunk-elementUI.5cb96dea.js></script><script src=/web/static/js/chunk-libs.debe5e73.js></script><script src=/web/static/js/app.914995ce.js></script></body></html>
