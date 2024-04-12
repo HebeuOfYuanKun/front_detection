@@ -55,7 +55,7 @@ export function downloadFile(filePath) {
 // 查询【请填写功能名称】所有列表
 export function listAllInfo(query) {
   return request({
-    url: '/business/alarm/listAll',
+    url: '/business/stream/listAll',
     method: 'get',
     params: query
   })

@@ -198,8 +198,8 @@
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row> -->
 
-    <el-table v-loading="loading" :data="controlList" @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="55" align="center" />
+    <el-table v-loading="loading" :data="controlList" >
+      <!-- <el-table-column type="selection" width="55" align="center" /> -->
     
       <el-table-column label="编码" align="center" prop="code" />
       
@@ -304,13 +304,20 @@
         <el-form-item label="识别物体：" prop="objectCode">
                   <el-checkbox-group v-model="form.objectCode" size="medium">
                     <el-checkbox v-for="item in objectOptions" :key="item.code" :label="item.code"
-                      :disabled="item.disabled">{{item.name}}</el-checkbox>
+                     >{{item.name}}</el-checkbox>
                   </el-checkbox-group>
                 </el-form-item>
         <el-form-item label="选择算法：" prop="algorithmCode">
                   <el-select v-model="form.algorithmCode" placeholder="请选择选择算法：" clearable
                     :style="{width: '100%'}">
                     <el-option v-for="(item, index) in field105Options" :key="index" :label="item.label"
+                      :value="item.value" :disabled="item.disabled"></el-option>
+                  </el-select>
+                </el-form-item>
+                <el-form-item label="选择视频流：" prop="algorithmCode" >
+                  <el-select v-model="form.algorithmCode" placeholder="请选择视频流：" clearable
+                    :style="{width: '100%'}">
+                    <el-option v-for="item in liveOptions" :key="index" :label="item.label"
                       :value="item.value" :disabled="item.disabled"></el-option>
                   </el-select>
                 </el-form-item>
@@ -339,7 +346,8 @@
 
 <script>
 import { listControl, getControl, delControl, addControl, updateControl } from "@/api/business/control";
-import { listObject, listAllObject,getObject, delObject, addObject, updateObject } from "@/api/business/object";
+import { listAllObject } from "@/api/business/object";
+import { listAllInfo } from "@/api/business/stream";
 export default {
   name: "Control",
   data() {
@@ -366,6 +374,8 @@ export default {
       controlList: [],
       // 弹出层标题
       title: "",
+      //在线视频流列表选项
+      liveOptions:[],
       // 是否显示弹出层
       open: false,
       // 查询参数
@@ -379,7 +389,7 @@ export default {
         streamName: null,
         streamVideo: null,
         streamAudio: null,
-        objectCode: null,
+        objectCode: [],
         algorithmCode: null,
         minInterval: null,
         classThresh: null,
@@ -431,21 +441,7 @@ export default {
         classThresh: [
           { required: true, message: "置信度不能为空", trigger: "blur" }
         ],
-        overlapThresh: [
-          { required: true, message: "阈值不能为空", trigger: "blur" }
-        ],
-        pushStream: [
-          { required: true, message: "推流地址不能为空", trigger: "blur" }
-        ],
-        pushStreamApp: [
-          { required: true, message: "推流app不能为空", trigger: "blur" }
-        ],
-        pushStreamName: [
-          { required: true, message: "推流name不能为空", trigger: "blur" }
-        ],
-        remark: [
-          { required: true, message: "备注不能为空", trigger: "blur" }
-        ],
+
         state: [
           { required: true, message: "状态不能为空", trigger: "blur" }
         ],
@@ -455,12 +451,18 @@ export default {
   created() {
     this.getList();
     this.getObjectList();
+    this.getStreamList()
   },
   methods: {
     see(app,name) {
       this.$router.push({ path: "/business/player?app="+app+"&name="+name }).catch((e)=>{
         console.log(e);
       });
+    },
+    getStreamList(){
+      listAllInfo().then(response=>{
+        this.liveOptions=response.data.mediaList
+      })
     },
     getObjectList(){
       listAllObject().then(response=>{
@@ -476,15 +478,13 @@ export default {
         // this.controlList.forEach(element => {
         //   element.objectCode=element.objectCode.split(",")
         // });
-        for(let i=0;i<this.controlList.length;i++){
-            let control=this.controlList[i].objectCode.split(",")
-          this.controlList[i].objectCode=control
-        }
-        console.log(this.controlList)
+        
+        //console.log(this.controlList)
         this.mediaServerState=response.mediaServerState
         this.analyzerServerState=response.analyzerServerState
         //this.total = response.total;
         this.loading = false;
+         //console.log(this.form.objectCode)
       });
     },
     // 取消按钮
@@ -503,7 +503,7 @@ export default {
         streamName: null,
         streamVideo: null,
         streamAudio: null,
-        objectCode: null,
+        objectCode: [],
         algorithmCode: null,
         minInterval: null,
         classThresh: null,
@@ -512,9 +512,9 @@ export default {
         pushStreamApp: null,
         pushStreamName: null,
         remark: null,
-        state: null,
+        state: 0,
       };
-      this.resetForm("form");
+      //this.resetForm("form");
     },
     /** 搜索按钮操作 */
     handleQuery() {
@@ -527,16 +527,16 @@ export default {
       this.handleQuery();
     },
     // 多选框选中数据
-    handleSelectionChange(selection) {
-      this.ids = selection.map(item => item.id)
-      this.single = selection.length!==1
-      this.multiple = !selection.length
-    },
+    // handleSelectionChange(selection) {
+    //   this.ids = selection.map(item => item.id)
+    //   this.single = selection.length!==1
+    //   this.multiple = !selection.length
+    // },
     /** 新增按钮操作 */
     handleAdd() {
       this.reset();
       this.open = true;
-      this.title = "添加control";
+      this.title = "添加布控";
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
@@ -544,21 +544,26 @@ export default {
       const id = row.id || this.ids
       getControl(id).then(response => {
         this.form = response.data;
+        this.form.objectCode=this.form.objectCode.split(",");
         this.open = true;
-        this.title = "修改control";
+        this.title = "修改识别参数";
       });
     },
     /** 提交按钮 */
     submitForm() {
       this.$refs["form"].validate(valid => {
         if (valid) {
+          
           if (this.form.id != null) {
+            
+            this.form.objectCode=this.form.objectCode.join(",");
             updateControl(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
+            this.form.objectCode=this.form.objectCode.join(",");
             addControl(this.form).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;
