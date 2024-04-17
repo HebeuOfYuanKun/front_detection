@@ -264,15 +264,15 @@
           <el-button
             size="mini"
             type="text"
-            icon="el-icon-edit"
-            @click="handleUpdate(scope.row)"
-            v-hasPermi="['business:control:edit']"
-          >识别</el-button><el-button
+            icon="el-icon-video-play"
+            @click="addDetection(scope.row)"
+            v-hasPermi="['business:control:detection']"
+          >加入识别</el-button><el-button
             size="mini"
             type="text"
-            icon="el-icon-edit"
-            @click="handleUpdate(scope.row)"
-            v-hasPermi="['business:control:edit']"
+            icon="el-icon-video-pause"
+            @click="cancelDetection(scope.row)"
+            v-hasPermi="['business:control:cancel']"
           >取消识别</el-button>
           <el-button
             size="mini"
@@ -314,8 +314,8 @@
                       :value="item.value" :disabled="item.disabled"></el-option>
                   </el-select>
                 </el-form-item>
-                <el-form-item label="选择视频流：" prop="algorithmCode" >
-                  <el-select v-model="form.algorithmCode" placeholder="请选择视频流：" clearable
+                <el-form-item label="选择视频流：" prop="liveStream" >
+                  <el-select v-model="form.liveStream" placeholder="请选择视频流：" clearable
                     :style="{width: '100%'}">
                     <el-option v-for="item in liveOptions" :key="index" :label="item.label"
                       :value="item.value" :disabled="item.disabled"></el-option>
@@ -345,7 +345,7 @@
 </template>
 
 <script>
-import { listControl, getControl, delControl, addControl, updateControl } from "@/api/business/control";
+import { listControl, getControl, delControl, addControl, updateControl,addDetectionBy,deleteDetection } from "@/api/business/control";
 import { listAllObject } from "@/api/business/object";
 import { listAllInfo } from "@/api/business/stream";
 export default {
@@ -391,6 +391,7 @@ export default {
         streamAudio: null,
         objectCode: [],
         algorithmCode: null,
+        liveStream:[],
         minInterval: null,
         classThresh: null,
         overlapThresh: null,
@@ -423,11 +424,8 @@ export default {
         streamName: [
           { required: true, message: "流name不能为空", trigger: "blur" }
         ],
-        streamVideo: [
+        liveStream: [
           { required: true, message: "视频信息不能为空", trigger: "blur" }
-        ],
-        streamAudio: [
-          { required: true, message: "音频信息不能为空", trigger: "blur" }
         ],
         objectCode: [
           { required: true, message: "识别物体码不能为空", trigger: "blur" }
@@ -526,17 +524,39 @@ export default {
       this.resetForm("queryForm");
       this.handleQuery();
     },
-    // 多选框选中数据
-    // handleSelectionChange(selection) {
-    //   this.ids = selection.map(item => item.id)
-    //   this.single = selection.length!==1
-    //   this.multiple = !selection.length
-    // },
+
     /** 新增按钮操作 */
     handleAdd() {
       this.reset();
       this.open = true;
       this.title = "添加布控";
+    },
+    /** 修改按钮操作 */
+    handleUpdate(row) {
+      this.reset();
+      const id = row.id || this.ids
+      getControl(id).then(response => {
+        this.form = response.data;
+        this.form.objectCode=this.form.objectCode.split(",");
+        this.open = true;
+        this.title = "修改识别参数";
+      });
+    },
+    /** 加入识别操作 */
+    addDetection(row) {  
+      const id = row.id
+      addDetectionBy(id).then(response => {
+        response.code==200?this.$modal.msgSuccess("识别加入成功"):this.$modal.msgError(response.msg)
+        //this.$modal.msgSuccess("识别加入成功");
+      });
+    },
+    /** 取消识别操作 */
+    cancelDetection(row) {  
+      const id = row.id
+      deleteDetection(id).then(response => {
+         response.code==200?this.$modal.msgSuccess("识别加入成功"):this.$modal.msgError(response.msg)
+        //this.$modal.msgSuccess("识别取消成功");
+      });
     },
     /** 修改按钮操作 */
     handleUpdate(row) {

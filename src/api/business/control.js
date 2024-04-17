@@ -25,7 +25,20 @@ export function getControl(id) {
     method: 'get'
   })
 }
+// 加入识别
+export function addDetectionBy(id) {
+  return request({
+    url: '/business/control/detection/' + id,
+    method: 'post'
+  })
+}
 
+export function deleteDetection(id) {
+  return request({
+    url: '/business/control/detection/' + id,
+    method: 'delete'
+  })
+}
 // 新增control
 export function addControl(data) {
   return request({
