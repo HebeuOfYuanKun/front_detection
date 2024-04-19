@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container">
+  <div class="app-container home">
     <el-form
       :model="queryParams"
       ref="queryForm"
@@ -8,21 +8,6 @@
       v-show="showSearch"
       label-width="80px"
     >
-      <!-- <el-form-item label="当前状态:" prop="curState" >
-        <el-select
-              v-model="queryParams.curState"
-              placeholder="当前状态"
-              clearable
-              style="width: 240px"
-            >
-            <el-option
-                v-for="dict in dict.type"
-                :key="dict.value"
-                :label="dict.label"
-                :value="dict.value"
-              />
-            </el-select>
-      </el-form-item> -->
       <el-form-item label="创建时间:">
         <el-date-picker
           v-model="dateRange"
@@ -44,7 +29,7 @@
         </el-checkbox-group>
       </el-form-item>
       <el-form-item label="事件状态" prop="state">
-        <el-select
+        <!-- <el-select
           v-model="queryParams.state"
           placeholder="当前状态"
           clearable
@@ -56,9 +41,16 @@
             :label="dict.label"
             :value="dict.value"
           />
-        </el-select>
+        </el-select> -->
+        <el-select v-model="queryParams.state" placeholder="请选择状态" filterable clearable>
+            <el-option
+              v-for="dict in dict.type.bus_ai_alarm_state"
+              :key="dict.value"
+              :label="dict.label"
+              :value="parseInt(dict.value)"
+            ></el-option>
+          </el-select>
       </el-form-item>
-      <!-- <el-form-item label="例如：person;fire" prop=""></el-form-item> -->
       <el-form-item>
         <el-button
           type="primary"
@@ -74,27 +66,6 @@
     </el-form>
 
     <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
-        <!-- <el-button
-          type="primary"
-          plain
-          icon="el-icon-plus"
-          size="mini"
-          @click="handleAdd"
-          v-hasPermi="['business:info:add']"
-        >新增</el-button> -->
-      </el-col>
-      <el-col :span="1.5">
-        <!-- <el-button
-          type="success"
-          plain
-          icon="el-icon-edit"
-          size="mini"
-          :disabled="single"
-          @click="handleUpdate"
-          v-hasPermi="['business:info:edit']"
-        >修改</el-button> -->
-      </el-col>
       <el-col :span="1.5">
         <el-button
           type="danger"
@@ -134,22 +105,15 @@
 
       <el-table-column label="视频" align="center">
         <template slot-scope="scope">
-        <video
-          controls
-          muted
-          loop
-          preload="none"
-          style="width: 100%; display: block"
-          :poster="scope.row.imagePath"
-          :src="scope.row.videoPath"
-        ></video>
+          <video
+            controls
+            muted
+            loop
+            preload="none"
+            style="width: 100%; display: block"
+            :poster="scope.row.imagePath"
+            :src="scope.row.videoPath"></video>
         </template>
-        <!-- <template slot-scope="scope">
-          <el-image
-            :src="'data:image/jpeg;base64,' + scope.row.imgPath"
-            fit="fill"
-          ></el-image>
-        </template> -->
       </el-table-column>
       <el-table-column
         label="发生时间"
@@ -173,12 +137,18 @@
       </el-table-column>
       <el-table-column label="报警等级" align="center" prop="grade">
         <template slot-scope="scope">
-          <span>{{ scope.row.grade }}级报警</span>
+          <dict-tag
+            :options="dict.type.bus_ai_alarm"
+            :value="scope.row.grade"
+          />
         </template>
       </el-table-column>
       <el-table-column label="当前状态" align="center" prop="state">
         <template slot-scope="scope">
-          <span>{{ state[scope.row.state - 1].label }}</span>
+          <dict-tag
+            :options="dict.type.bus_ai_alarm_state"
+            :value="scope.row.state"
+          />
         </template>
       </el-table-column>
       <el-table-column label="事件类型" align="center" prop="remark" />
@@ -204,9 +174,6 @@
             v-hasPermi="['business:alarm:remove']"
             >删除</el-button
           >
-          <!-- <el-button type="primary" @click="downloadImage(scope.row)"
-            >下载图片</el-button
-          > -->
 
         </template>
       </el-table-column>
@@ -238,9 +205,6 @@
             />
           </el-select>
         </el-form-item>
-        <!-- <el-form-item label="${comment}" prop="imgPath">
-          <el-input v-model="form.imgPath" placeholder="请输入${comment}" />
-        </el-form-item> -->
         <el-form-item label="位置:" prop="location">
           <el-input v-model="form.location" placeholder="请输入位置" />
         </el-form-item>
@@ -261,10 +225,10 @@ import {
   addInfo,
   updateInfo,
   downloadFile,
-} from "@/api/business/alarm";
-
+} from "@/api/business/alarm"
 export default {
-  name: "Info",
+  name: "index",
+  dicts: ["bus_ai_alarm","bus_ai_alarm_state","sys_normal_disable"],
   data() {
     return {
       // 根路径
@@ -296,12 +260,12 @@ export default {
       // 是否显示弹出层
       open: false,
       // 查询参数
-      dict: {
-        type: [
-          { label: "未检验", value: "未检验" },
-          { label: "已检验", value: "已检验" },
-        ],
-      },
+      // dict: {
+      //   type: [
+      //     { label: "未检验", value: "未检验" },
+      //     { label: "已检验", value: "已检验" },
+      //   ],
+      // },
       queryParams: {
         pageNum: 1,
         pageSize: 10,
@@ -323,9 +287,7 @@ export default {
         imgPath: [
           { required: true, message: "$comment不能为空", trigger: "blur" },
         ],
-        // location: [
-        //   { required: true, message: "$comment不能为空", trigger: "blur" }
-        // ],
+
         eveType: [
           { required: true, message: "$comment不能为空", trigger: "change" },
         ],

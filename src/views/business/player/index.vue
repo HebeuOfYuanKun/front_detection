@@ -22,10 +22,11 @@
           id="player"
           ref="player"
           controls
-          controls
           autoplay
           muted
+          poster="@/assets/images/cover.svg"
         ></video>
+        
       </el-col>
     </el-row>
     <el-row>
@@ -48,8 +49,11 @@
           </el-table-column>
           <el-table-column prop="grade" align="center" label="警报等级">
             <template slot-scope="scope">
-              <span>{{scope.row.grade}}级报警</span>
-            </template>
+          <dict-tag
+            :options="dict.type.bus_ai_alarm"
+            :value="scope.row.grade"
+          />
+        </template>
           </el-table-column>
 
           <el-table-column fixed="right" label="操作" width="120">
@@ -76,12 +80,9 @@
         <el-form-item label="发生时间:" prop="createTime">
           {{ alarm.createTime }}
         </el-form-item>
-        <!-- <el-form-item label="位置:" prop="location">
-          {{ UnsafeInfo.location }}
-        </el-form-item> -->
-        <el-form-item label="图片" prop="imagePath">
+        <el-form-item label="预警图片：" prop="imagePath">
           <el-image
-            style="width: 100px; height: 100px"
+            style="width: 200px; height: 200px"
             :src="alarm.imagePath"
             fit="fill"
           ></el-image>
@@ -102,6 +103,7 @@ import {getDay} from "@/utils/time/getTime";
 import FlvExtend from "flv-extend";
 export default {
   name: "index",
+  dicts: ["bus_ai_alarm", "sys_normal_disable"],
   data() {
     return {
       liveUrl: "",
@@ -128,20 +130,7 @@ export default {
       form: {
         warning: "",
       },
-      options: [
-        {
-          value: "选项1",
-          label: "人",
-        },
-        {
-          value: "选项2",
-          label: "机器",
-        },
-        {
-          value: "选项3",
-          label: "车辆",
-        },
-      ],
+    
       videoOptions: {
         autoplay: true,
         controls: true,
@@ -177,56 +166,111 @@ export default {
         }
       );
     },
-    initVideo(url) {
-      //播放器存在 清空重置
-      if (player) {
-        player.destroy();
-        player = null;
-      }
-      let app = this.$route.query.app; // 获取名字
-      let name = this.$route.query.name; // 获取名字
-      getFlvUrl(app, name).then((response) => {
-        //console.log(response)
-        if (response.code == 200) {
-          let data = response.data;
-          //console.log(data)
-          if (data.hasAdress) {
-            url = data.flvUrl;
-            this.liveUrl = url;
-            console.log(this.liveUrl);
-          }
+    // initVideo(url) {
+    //   //播放器存在 清空重置
+    //   if (player) {
+    //     player.destroy();
+    //     player = null;
+    //   }
+      
+    //   let app = this.$route.query.app; // 获取名字
+    //   let name = this.$route.query.name; // 获取名字
+    //   if(app!=null&&name!=null){
+    //     getFlvUrl(app, name).then((response) => {
+    //     if (response.code == 200) {
+    //       let data = response.data;
+    //       if (data.hasAdress) {
+    //         url = data.flvUrl;
+    //         this.liveUrl = url;
+    //       }
+    //     }
+    //   })
+    //   }
+      
+    //   // 配置需要的功能
+    //   const flv = new FlvExtend({
+    //     element: document.getElementById("player"), // *必传
+    //     frameTracking: true, // 开启追帧设置
+    //     updateOnStart: true, // 点击播放后更新视频
+    //     updateOnFocus: true, // 获得焦点后更新视频
+    //     reconnect: true, // 开启断流重连
+    //     reconnectInterval: 2000, // 断流重连间隔
+    //   });
+
+    //   // 调用 init 方法初始化视频
+    //   // init 方法的参数与 flvjs.createPlayer 相同，并返回 flvjs.player 实例
+    //   let player;
+    //   const self = this;
+    //   setTimeout(function () {
+    //     player = flv.init(
+    //       {
+    //         type: "flv",
+    //         url: self.liveUrl,
+    //         isLive: true,
+    //       },
+    //       {
+    //         enableStashBuffer: false, // 如果您需要实时（最小延迟）来进行实时流播放，则设置为false
+    //         stashInitialSize: 128, // 减少首帧显示等待时长
+    //       }
+    //     );
+    //     player.play();
+    //   }, 1000); // 延迟时间为1000毫秒（1秒）
+    // },
+    async initVideo() {
+    // 如果播放器存在，清空重置
+    if (this.player) {
+      this.player.destroy();
+      this.player = null;
+    }
+
+    // 从路由中获取'app'和'name'
+    const { app, name } = this.$route.query;
+    if(app!=null&&name!=null){
+        try {
+        const response = await getFlvUrl(app, name);
+        //console.log(response.data.hasAddress) 
+        if (response.code === 200 && response.data.hasAddress) {
+          this.liveUrl = response.data.flvUrl;
+        } else {
+          console.error('Failed to get video URL:', response);
+          return; // 获取URL失败，终止执行
         }
-      });
+      } catch (error) {
+        console.error('Error fetching video URL:', error);
+        return; // 出错时，终止执行
+      }
+    }
+    
 
-      // 配置需要的功能
-      const flv = new FlvExtend({
-        element: document.getElementById("player"), // *必传
-        frameTracking: true, // 开启追帧设置
-        updateOnStart: true, // 点击播放后更新视频
-        updateOnFocus: true, // 获得焦点后更新视频
-        reconnect: true, // 开启断流重连
-        reconnectInterval: 2000, // 断流重连间隔
-      });
+    // 配置播放器
+    const flv = new FlvExtend({
+      element: document.getElementById("player"), // 必传
+      frameTracking: true,        // 开启追帧设置
+      updateOnStart: true,        // 点击播放后更新视频
+      updateOnFocus: true,        // 获得焦点后更新视频
+      reconnect: true,            // 开启断流重连
+      reconnectInterval: 2000,    // 断流重连间隔
+    });
 
-      // 调用 init 方法初始化视频
-      // init 方法的参数与 flvjs.createPlayer 相同，并返回 flvjs.player 实例
-      let player;
-      const self = this;
-      setTimeout(function () {
-        player = flv.init(
-          {
-            type: "flv",
-            url: self.liveUrl,
-            isLive: true,
-          },
-          {
-            enableStashBuffer: false, // 如果您需要实时（最小延迟）来进行实时流播放，则设置为false
-            stashInitialSize: 128, // 减少首帧显示等待时长
-          }
-        );
-        player.play();
-      }, 1000); // 延迟时间为1000毫秒（1秒）
-    },
+    // 延迟初始化和播放，以确保DOM已更新
+    setTimeout(() => {
+      
+      if(this.liveUrl!=null&&this.liveUrl!=""){
+        this.player = flv.init({
+        type: "flv",
+        url: this.liveUrl,
+        isLive: true
+      }, {
+        enableStashBuffer: false,  // 实时流播放
+        stashInitialSize: 128      // 减少首帧显示等待时长
+      });
+        this.player.play().catch(err => {
+        console.error('Error playing video:', err);
+      });
+      }
+      
+    }, 1000); // 延迟1秒以确保视频URL已更新
+  },
     publish(topic, message) {
       if (!this.client.connected) {
         //console.log("客户端未连接");
@@ -305,7 +349,12 @@ export default {
     goTarget(href) {
       window.open(href, "_blank");
     },
-
+    play(){
+      this.initVideo()
+    },
+    stop(){
+      this.player.pause()
+    },
     format(percentage) {
       return percentage === 100 ? "满" : `${percentage}%`;
     },
