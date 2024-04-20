@@ -417,6 +417,7 @@ export default {
       const id = row.id
       addDetectionBy(id).then(response => {
         response.code==200?this.$modal.msgSuccess("识别加入成功"):this.$modal.msgError(response.msg)
+        this.getList();
         //this.$modal.msgSuccess("识别加入成功");
       });
     },
@@ -424,7 +425,8 @@ export default {
     cancelDetection(row) {  
       const id = row.id
       deleteDetection(id).then(response => {
-         response.code==200?this.$modal.msgSuccess("识别加入成功"):this.$modal.msgError(response.msg)
+         response.code==200?this.$modal.msgSuccess("识别取消成功"):this.$modal.msgError(response.msg)
+         this.getList();
         //this.$modal.msgSuccess("识别取消成功");
       });
     },
