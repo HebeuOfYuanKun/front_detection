@@ -1,12 +1,21 @@
 <template>
   <div class="app-container">
     <div >
-        <h2 style="display: flex; align-items: center; ">视频服务器运行状态：<el-tag style="margin-right:10px" v-if="mediaServerState"  size="medium">正在运行</el-tag>
-            <el-tag style="margin-right:10px" v-else="mediaServerState"  size="medium" type="danger">停止运行</el-tag>
+        <h2 style="display: flex; align-items: center; ">视频服务器运行状态：
+          <!-- <el-tag style="margin-right:10px" v-if="mediaServerState"  size="medium">正在运行</el-tag>
+          <el-tag style="margin-right:10px" v-else="mediaServerState"  size="medium" type="danger">停止运行</el-tag> -->
+          <dict-tag
+            style="margin-right:10px"
+            :options="dict.type.bus_ai_service"
+            :value="mediaServerState"
+          />
             视频分析器运行状态:
-           <el-tag style="margin-left:10px" v-if="analyzerServerState"  size="medium">正在运行</el-tag>
-            <el-tag style="margin-left:10px" v-else="analyzerServerState"  size="medium" type="danger">停止运行</el-tag>
-            
+           
+            <dict-tag
+            style="margin-left:10px"
+            :options="dict.type.bus_ai_service"
+            :value="analyzerServerState"
+          />
             </h2>
     </div>
     <el-row :gutter="10" class="mb8">
@@ -73,15 +82,20 @@
       <el-table-column label="帧数" align="center" prop="checkFps" />
       <el-table-column label="识别状态" align="center" prop="state" >
         <template slot-scope="scope">        
-            <el-tag v-if="scope.row.state==0"  size="medium">未设置识别</el-tag>
-            <el-tag v-if="scope.row.state==1"   type="success">正在识别</el-tag>
-            <el-tag v-if="scope.row.state==5"  type="danger">识别中断</el-tag></el-tag>    
+          <dict-tag
+  
+  :options="dict.type.bus_ai_detection"
+  :value="scope.row.state"
+/>
       </template>
       </el-table-column>
-      <el-table-column label="在线" align="center" prop="state" >
+      <el-table-column label="在线" align="center" prop="isActivated" >
         <template slot-scope="scope">        
-            <el-tag v-if="scope.row.isActivated==false"  size="medium" type="danger">离线</el-tag>
-            <el-tag v-if="scope.row.isActivated==true"   type="success">在线</el-tag>
+          <dict-tag
+  
+  :options="dict.type.bus_ai_stream"
+  :value="scope.row.isActivated"
+/>
               
       </template>
       </el-table-column>
@@ -185,6 +199,7 @@ import { listAllInfo } from "@/api/business/stream";
 import { listAllAlgorithm } from "@/api/business/algorithm";
 export default {
   name: "Control",
+  dicts: ["bus_ai_service","bus_ai_stream","bus_ai_detection"],
   data() {
 
     /////尚未完成表单效验
