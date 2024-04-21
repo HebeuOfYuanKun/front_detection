@@ -1,10 +1,11 @@
 <template>
   <div class="app-container">
     <div>
-        <h2>视频服务器运行状态：<span v-if="streamData.mediaServerState">正在运行
-            </span>
-            <span v-else="streamData.mediaServerState">停止运行
-            </span>
+        <h2 style="display: flex; align-items: center; ">视频服务器运行状态：<dict-tag
+            style="margin-right:10px"
+            :options="dict.type.bus_ai_service"
+            :value="streamData.mediaServerState"
+          />
             </h2>
     </div>
     <el-table
@@ -26,10 +27,11 @@
       </el-table-column>
       <el-table-column label="状态" align="center" >
         <template slot-scope="scope">
-          <span v-if="scope.row.active">在线
-            </span>
-            <span v-else="scope.row.active">离线
-            </span>
+          <dict-tag
+  
+            :options="dict.type.bus_ai_stream"
+            :value="scope.row.active"
+          />
         </template>
       </el-table-column>
       <el-table-column
@@ -126,15 +128,12 @@ import {
 
 export default {
   name: "Info",
+  dicts: ["bus_ai_service","bus_ai_stream"],
   data() {
     return {
       // 根路径
       baseURL: process.env.VUE_APP_BASE_API,
-      state: [
-        { label: "未处理", value: "1" },
-        { label: "已处理", value: "2" },
-        { label: "已忽略", value: "3" },
-      ],
+      
       streamData:{
         mediaList:[],
         mediaServerState:null
@@ -161,12 +160,6 @@ export default {
       // 是否显示弹出层
       open: false,
       // 查询参数
-      dict: {
-        type: [
-          { label: "未检验", value: "未检验" },
-          { label: "已检验", value: "已检验" },
-        ],
-      },
       queryParams: {
         pageNum: 1,
         pageSize: 10,
