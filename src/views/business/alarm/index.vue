@@ -24,7 +24,7 @@
           <el-checkbox-button
             label="person"
           >未戴安全帽</el-checkbox-button>
-          <el-checkbox-button label="smoke" name="type">烟情</el-checkbox-button></el-checkbox-button>
+          <el-checkbox-button label="smoke" name="type">烟情</el-checkbox-button>
           <el-checkbox-button label="fire" name="type">火情</el-checkbox-button>
         </el-checkbox-group>
       </el-form-item>
