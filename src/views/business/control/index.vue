@@ -89,10 +89,9 @@
 />
       </template>
       </el-table-column>
-      <el-table-column label="在线" align="center" prop="isActivated" >
+      <el-table-column label="在线" align="center"  >
         <template slot-scope="scope">        
           <dict-tag
-  
   :options="dict.type.bus_ai_stream"
   :value="scope.row.isActivated"
 />
@@ -225,7 +224,6 @@ export default {
       mediaServerState:"",
       // 根路径
       baseURL: process.env.VUE_APP_BASE_API,
-      
       // 遮罩层
       loading: true,
       // 选中数组
@@ -355,8 +353,8 @@ export default {
         // });
         
         //console.log(this.controlList)
-        this.mediaServerState=response.mediaServerState
-        this.analyzerServerState=response.analyzerServerState
+        this.mediaServerState=response.mediaServerState+""
+        this.analyzerServerState=response.analyzerServerState+""
         //this.total = response.total;
         this.loading = false;
          //console.log(this.form.objectCode)
