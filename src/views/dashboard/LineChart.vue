@@ -33,8 +33,11 @@ export default {
   },
   data() {
     return {
-      chart: null
+      data: null
     }
+  },
+  created(){
+    this.$socket.registerCallBack('getLineEchartsData', this.getLineEchartsData)
   },
   watch: {
     chartData: {
@@ -61,8 +64,83 @@ export default {
       this.chart = echarts.init(this.$el, 'macarons')
       this.setOptions(this.chartData)
     },
+    getLineEchartsData(data){
+      this.data=data
+      console.log(data)
+      this.updateChart()
+    },
+    updateChart() {
+      const dataOption = {
+        xAxis: {
+          data: this.data.CurrentWeek
+        },
+        
+        series: [{
+          name: '一级预警', itemStyle: {
+            normal: {
+              color: '#FF005A',
+              lineStyle: {
+                color: '#FF005A',
+                width: 2
+              }
+            }
+          },
+          type: 'line',
+          data: this.data.grade1,
+      
+        },
+        {
+          name: '二级预警',
+          smooth: true,
+          type: 'line',
+          itemStyle: {
+            normal: {
+              color: '#FFFF00',
+              lineStyle: {
+                color: '#FFFF00',
+                width: 2
+              },
+              areaStyle: {
+                color: '#f3f8ff'
+              }
+            }
+          },
+          data: this.data.grade2,
+          animationDuration: 2800,
+          animationEasing: 'quadraticOut'
+        },
+        {
+          name: '三级预警',
+          smooth: true,
+          type: 'line',
+          itemStyle: {
+            normal: {
+              color: '#3888fa',
+              lineStyle: {
+                color: '#3888fa',
+                width: 2
+              },
+              areaStyle: {
+                color: '#f3f8ff'
+              }
+            }
+          },
+          data: this.data.grade3,
+          animationDuration: 2800,
+          animationEasing: 'quadraticOut'
+        }]
+      
+          
+        
+      }
+      this.chart.setOption(dataOption)
+    },
     setOptions({ expectedData, actualData } = {}) {
       this.chart.setOption({
+        title: {
+        text: '近一周预警事件数量',
+      
+          },
         xAxis: {
           data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
           boundaryGap: false,
@@ -90,10 +168,10 @@ export default {
           }
         },
         legend: {
-          data: ['expected', 'actual']
+          data: ['一级预警', '二级预警', '三级预警']
         },
         series: [{
-          name: 'expected', itemStyle: {
+          name: '一级预警', itemStyle: {
             normal: {
               color: '#FF005A',
               lineStyle: {
@@ -109,7 +187,27 @@ export default {
           animationEasing: 'cubicInOut'
         },
         {
-          name: 'actual',
+          name: '二级预警',
+          smooth: true,
+          type: 'line',
+          itemStyle: {
+            normal: {
+              color: '#FFFF00',
+              lineStyle: {
+                color: '#FFFF00',
+                width: 2
+              },
+              areaStyle: {
+                color: '#f3f8ff'
+              }
+            }
+          },
+          data: actualData,
+          animationDuration: 2800,
+          animationEasing: 'quadraticOut'
+        },
+        {
+          name: '三级预警',
           smooth: true,
           type: 'line',
           itemStyle: {
@@ -127,7 +225,8 @@ export default {
           data: actualData,
           animationDuration: 2800,
           animationEasing: 'quadraticOut'
-        }]
+        }
+      ]
       })
     }
   }

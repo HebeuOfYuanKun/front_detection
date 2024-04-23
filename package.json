@@ -41,7 +41,7 @@
     "clipboard": "2.0.8",
     "core-js": "^3.25.0",
     "crypto-js": "^4.1.1",
-    "echarts": "4.9.0",
+    "echarts": "^4.9.0",
     "element-ui": "^2.15.14",
     "file-saver": "2.0.5",
     "flv-extend": "^0.3.0",

@@ -93,7 +93,7 @@
         <template slot-scope="scope">        
           <dict-tag
   :options="dict.type.bus_ai_stream"
-  :value="scope.row.isActivated"
+  :value="scope.row.isActivated+''"
 />
               
       </template>
