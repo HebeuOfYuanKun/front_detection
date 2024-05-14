@@ -44,7 +44,7 @@
     </el-row>
     <el-table v-loading="loading" :data="controlList" >
     
-      <el-table-column label="编码" align="center" prop="code" />
+      <el-table-column label="布控名称" align="center" prop="name" />
       
       <el-table-column label="未检测视频流" align="center" prop="streamName" >
         <template slot-scope="scope">
@@ -143,7 +143,9 @@
     <!-- 添加或修改control对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="700px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="150px" label-position="left">
-  
+        <el-form-item label="布控名称：" prop="name">
+                  <el-input v-model="form.name" placeholder="布控名称："></el-input>
+                </el-form-item>
        <el-form-item label="排序：" prop="sort">
                   <el-input-number v-model="form.sort" placeholder="序号排序："></el-input-number>
                 </el-form-item>
@@ -280,8 +282,8 @@ export default {
         id: [
           { required: true, message: "不能为空", trigger: "blur" }
         ],
-        userId: [
-          { required: true, message: "用户id不能为空", trigger: "blur" }
+        name: [
+          { required: true, message: "布控名称不能为空", trigger: "blur" }
         ],
         sort: [
           { required: true, message: "排序不能为空", trigger: "blur" }
