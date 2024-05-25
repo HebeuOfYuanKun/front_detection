@@ -101,7 +101,7 @@ import centerRight2 from './centerRight2'
 import center from './center'
 import bottomLeft from './bottomLeft'
 import bottomRight from './bottomRight'
-
+import AMapLoader from '@amap/amap-jsapi-loader';
 export default {
   mixins: [ drawMixin ],
   data() {
@@ -125,6 +125,25 @@ export default {
     bottomRight
   },
   mounted() {
+      AMapLoader.load({
+      key: "5c72512e2f01f7a64d6cd4e06bd196e8", //申请好的Web端开发者 Key，调用 load 时必填
+      version: "2.0", //指定要加载的 JS API 的版本，缺省时默认为 1.4.15
+    }).then((AMap) => {
+      this.map = new AMap 
+      }).catch((e) => {
+        console.error(e); //加载错误提示
+      });
+      map.plugin('AMap.CitySearch', function () {
+                var citySearch = new AMap.CitySearch()
+                citySearch.getLocalCity(function (status, result) {
+                    // console.log(status);
+                    if (status === 'complete' && result.info === 'OK') {
+                        // 查询成功，result即为当前所在城市信息
+                        //console.log(result.city);
+                        this.getWeather(result.city)
+                    }
+                })
+            })
     this.timeFn()
     this.cancelLoading()
   },
@@ -132,6 +151,31 @@ export default {
     clearInterval(this.timing)
   },
   methods: {
+   getWeather(cityName) {
+            //加载天气查询插件
+            AMap.plugin('AMap.Weather', function () {
+                //创建天气查询实例
+                var weather = new AMap.Weather();
+
+                //执行实时天气信息查询
+                weather.getLive(cityName, function (err, data) {
+                    console.log(err, data);
+                    state.today = data
+                });
+                //未来的天气
+                weather.getForecast(cityName, function (err, data) {
+                    console.log(err, data);
+                    state.futureData = data.forecasts
+
+                    data.forecasts.forEach(item => {
+                        tempArr.value.push(item.dayTemp)
+                    })
+                });
+
+
+
+            })
+          },
     timeFn() {
       this.timing = setInterval(() => {
         this.dateDay = formatTime(new Date(), 'HH: mm: ss')
@@ -149,6 +193,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '@/assets/bigscreen/scss/index.scss';
-@import '@/assets/bigscreen/scss/style.scss';
+@import "@/assets/bigscreen/scss/index.scss";
+@import "@/assets/bigscreen/scss/style.scss";
 </style>
