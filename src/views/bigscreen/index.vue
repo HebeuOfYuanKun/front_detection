@@ -32,12 +32,12 @@
               <span class="text">飞机状态：尚未起飞</span>
             </div>
             <div class="react-left ml-3">
-              <span class="text">数据分析2</span>
+              <span class="text">今日天气：{{ weatherdata.weather }} {{ weatherdata.temperature }} °</span>
             </div>
           </div>
           <div class="d-flex aside-width">
             <div class="react-right bg-color-blue mr-3">
-              <span class="text fw-b">新疆中联润世煤业有限公司</span>
+              <span class="text fw-b">{{ deptInfo.deptName }}</span>
             </div>
             <div class="react-right mr-4 react-l-s">
               <span class="react-after"></span>
@@ -93,17 +93,18 @@
 
 <script>
 import drawMixin from "@/utils/bigscreen/drawMixin";
-import { formatTime } from '@/utils/bigscreen/index.js'
-import centerLeft1 from './centerLeft1'
-import centerLeft2 from './centerLeft2'
-import centerRight1 from './centerRight1'
-import centerRight2 from './centerRight2'
-import center from './center'
-import bottomLeft from './bottomLeft'
-import bottomRight from './bottomRight'
-import AMapLoader from '@amap/amap-jsapi-loader';
+import { formatTime } from "@/utils/bigscreen/index.js";
+import centerLeft1 from "./centerLeft1";
+import centerLeft2 from "./centerLeft2";
+import centerRight1 from "./centerRight1";
+import centerRight2 from "./centerRight2";
+import center from "./center";
+import bottomLeft from "./bottomLeft";
+import bottomRight from "./bottomRight";
+import AMapLoader from "@amap/amap-jsapi-loader";
+import { listDept } from "@/api/system/dept"
 export default {
-  mixins: [ drawMixin ],
+  mixins: [drawMixin],
   data() {
     return {
       timing: null,
@@ -111,9 +112,13 @@ export default {
       dateDay: null,
       dateYear: null,
       dateWeek: null,
-      weekday: ['周日', '周一', '周二', '周三', '周四', '周五', '周六'],
-      decorationColor: ['#568aea', '#000000']
-    }
+      weekday: ["周日", "周一", "周二", "周三", "周四", "周五", "周六"],
+      decorationColor: ["#568aea", "#000000"],
+      weatherdata: {},
+      deptInfo:{
+        "deptName"  : ""
+      },
+    };
   },
   components: {
     centerLeft1,
@@ -122,74 +127,95 @@ export default {
     centerRight2,
     center,
     bottomLeft,
-    bottomRight
+    bottomRight,
   },
   mounted() {
-      AMapLoader.load({
-      key: "5c72512e2f01f7a64d6cd4e06bd196e8", //申请好的Web端开发者 Key，调用 load 时必填
-      version: "2.0", //指定要加载的 JS API 的版本，缺省时默认为 1.4.15
-    }).then((AMap) => {
-      this.map = new AMap 
-      }).catch((e) => {
-        console.error(e); //加载错误提示
-      });
-      map.plugin('AMap.CitySearch', function () {
-                var citySearch = new AMap.CitySearch()
-                citySearch.getLocalCity(function (status, result) {
-                    // console.log(status);
-                    if (status === 'complete' && result.info === 'OK') {
-                        // 查询成功，result即为当前所在城市信息
-                        //console.log(result.city);
-                        this.getWeather(result.city)
-                    }
-                })
-            })
-    this.timeFn()
-    this.cancelLoading()
+    this.initWeather();
+    this.timeFn();
+    this.cancelLoading();
   },
-  beforeDestroy () {
-    clearInterval(this.timing)
+  beforeDestroy() {
+    clearInterval(this.timing);
+  },
+  created(){
+    this.getDept()
   },
   methods: {
-   getWeather(cityName) {
-            //加载天气查询插件
-            AMap.plugin('AMap.Weather', function () {
-                //创建天气查询实例
-                var weather = new AMap.Weather();
-
-                //执行实时天气信息查询
-                weather.getLive(cityName, function (err, data) {
-                    console.log(err, data);
-                    state.today = data
-                });
-                //未来的天气
-                weather.getForecast(cityName, function (err, data) {
-                    console.log(err, data);
-                    state.futureData = data.forecasts
-
-                    data.forecasts.forEach(item => {
-                        tempArr.value.push(item.dayTemp)
-                    })
-                });
-
-
-
-            })
-          },
+    getDept(){
+      listDept({"parentId":0}).then(response => {
+      this.deptInfo = response.data[0];
+    });
+    },
+    initWeather() {
+      AMapLoader.load({
+        key: "35edef5e1b134ce75c721a266e6e5a2a", //申请好的Web端开发者 Key，调用 load 时必填
+        version: "2.0", //指定要加载的 JS API 的版本，缺省时默认为 1.4.15
+        plugins: ["AMap.Weather", "AMap.CitySearch"],
+      }).then((AMap) => {
+        let that = this;
+        var citySearch = new window.AMap.CitySearch();
+        console.log(citySearch);
+        citySearch.getLocalCity(function (status, result) {
+          console.log(result);
+          if (status === "complete" && result.info === "OK") {
+            // 查询成功，result即为当前所在城市信息
+            //that.getWeather(result.city)
+            //创建天气查询实例
+            let weather = new AMap.Weather();
+            weather.getLive(result.city, function (err, data) {
+              if (data.info == "OK") {
+                
+                that.weatherdata = data;
+              }
+            });
+          }
+        });
+      });
+      //this.getCity()
+    },
+    getCity() {
+      let that = this;
+      if (window) {
+        window.AMap.plugin("AMap.CitySearch", function () {
+          var citySearch = new window.AMap.CitySearch();
+          citySearch.getLocalCity(function (status, result) {
+            if (status === "complete" && result.info === "OK") {
+              // 查询成功，result即为当前所在城市信息
+              that.getWeather(result.city);
+            }
+          });
+        });
+      }
+    },
+    // 获取天气
+    getWeather(city) {
+      let that = this;
+      // 加载天气查询插件
+      window.AMap.plugin("AMap.Weather", function () {
+        // 创建天气查询实例
+        let weather = new window.AMap.Weather();
+        // 执行实时天气信息查询
+        weather.getLive(city, function (err, data) {
+          if (data.info == "OK") {
+            that.weatherdata = data;
+          }
+        });
+      });
+    },
     timeFn() {
       this.timing = setInterval(() => {
-        this.dateDay = formatTime(new Date(), 'HH: mm: ss')
-        this.dateYear = formatTime(new Date(), 'yyyy-MM-dd')
-        this.dateWeek = this.weekday[new Date().getDay()]
-      }, 1000)
+        this.dateDay = formatTime(new Date(), "HH: mm: ss");
+        this.dateYear = formatTime(new Date(), "yyyy-MM-dd");
+        this.dateWeek = this.weekday[new Date().getDay()];
+      }, 1000);
     },
     cancelLoading() {
       setTimeout(() => {
-        this.loading = false
-      }, 500)
-    }
-  }
-}
+        this.loading = false;
+      }, 500);
+    },
+  },
+};
 </script>
 
 <style lang="scss" scoped>
