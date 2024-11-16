@@ -61,7 +61,7 @@
       </el-table-column>
       <el-table-column label="视频信息" align="center" prop="streamVideo" />
       
-      <el-table-column label="识别物体码" align="center" prop="objectCode" />
+      <el-table-column label="预警物体码" align="center" prop="objectCode" />
       
       
       
@@ -150,7 +150,7 @@
                   <el-input-number v-model="form.sort" placeholder="序号排序："></el-input-number>
                 </el-form-item>
         
-        <el-form-item label="识别物体：" prop="objectCode">
+        <el-form-item label="预警物体：" prop="objectCode">
                   <el-checkbox-group v-model="form.objectCode" size="medium">
                     <el-checkbox v-for="item in objectOptions" :key="item.code" :label="item.code"
                      >{{item.name}}</el-checkbox>
@@ -295,9 +295,7 @@ export default {
         liveStream: [
           { required: true, message: "视频信息不能为空", trigger: "blur" }
         ],
-        objectCode: [
-          { required: true, message: "识别物体码不能为空", trigger: "blur" }
-        ],
+        
         algorithmCode: [
           { required: true, message: "算法码不能为空", trigger: "blur" },
           
@@ -420,7 +418,12 @@ export default {
       const id = row.id || this.ids
       getControl(id).then(response => {
         this.form = response.data;
-        this.form.objectCode=this.form.objectCode.split(",");
+        if (this.form.objectCode != null&&this.form.objectCode.length!=0) {
+            this.form.objectCode = this.form.objectCode.split(","); 
+          }else{
+            this.form.objectCode = [];
+          }
+        //this.form.objectCode=this.form.objectCode.split(",");
         this.form.liveStream=this.form.streamApp+"/"+this.form.streamName
         this.open = true;
         this.title = "修改识别参数";
