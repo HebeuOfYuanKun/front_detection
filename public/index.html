@@ -8,6 +8,7 @@
     <link rel="icon" href="<%= BASE_URL %>logo.ico">
     <title><%= webpackConfig.name %></title>
     <script src="/jswebrtc.min.js"></script>
+    
     <!--[if lt IE 11]><script>window.location.href='/html/ie.html';</script><![endif]-->
 	  <style>
     html,
@@ -197,7 +198,12 @@
   </style>
   </head>
   <body>
-    
+    <script type="text/javascript">
+      window._AMapSecurityConfig = {
+          // serviceHost:'您的代理服务器域名或地址/_AMapService',  
+          securityJsCode:"301ab4b89c6dc93afd54ae7b5042def4"//申请的密钥
+      }
+    </script>
     <div id="app">
 	    <div id="loader-wrapper">
 		    <div id="loader"></div>

@@ -44,7 +44,7 @@
     </el-row>
     <el-table v-loading="loading" :data="controlList" >
     
-      <el-table-column label="编码" align="center" prop="code" />
+      <el-table-column label="布控名称" align="center" prop="name" />
       
       <el-table-column label="未检测视频流" align="center" prop="streamName" >
         <template slot-scope="scope">
@@ -61,7 +61,7 @@
       </el-table-column>
       <el-table-column label="视频信息" align="center" prop="streamVideo" />
       
-      <el-table-column label="识别物体码" align="center" prop="objectCode" />
+      <el-table-column label="预警物体码" align="center" prop="objectCode" />
       
       
       
@@ -89,12 +89,11 @@
 />
       </template>
       </el-table-column>
-      <el-table-column label="在线" align="center" prop="isActivated" >
+      <el-table-column label="在线" align="center"  >
         <template slot-scope="scope">        
           <dict-tag
-  
   :options="dict.type.bus_ai_stream"
-  :value="scope.row.isActivated"
+  :value="scope.row.isActivated+''"
 />
               
       </template>
@@ -144,12 +143,14 @@
     <!-- 添加或修改control对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="700px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="150px" label-position="left">
-  
+        <el-form-item label="布控名称：" prop="name">
+                  <el-input v-model="form.name" placeholder="布控名称："></el-input>
+                </el-form-item>
        <el-form-item label="排序：" prop="sort">
                   <el-input-number v-model="form.sort" placeholder="序号排序："></el-input-number>
                 </el-form-item>
         
-        <el-form-item label="识别物体：" prop="objectCode">
+        <el-form-item label="预警物体：" prop="objectCode">
                   <el-checkbox-group v-model="form.objectCode" size="medium">
                     <el-checkbox v-for="item in objectOptions" :key="item.code" :label="item.code"
                      >{{item.name}}</el-checkbox>
@@ -225,7 +226,6 @@ export default {
       mediaServerState:"",
       // 根路径
       baseURL: process.env.VUE_APP_BASE_API,
-      
       // 遮罩层
       loading: true,
       // 选中数组
@@ -282,8 +282,8 @@ export default {
         id: [
           { required: true, message: "不能为空", trigger: "blur" }
         ],
-        userId: [
-          { required: true, message: "用户id不能为空", trigger: "blur" }
+        name: [
+          { required: true, message: "布控名称不能为空", trigger: "blur" }
         ],
         sort: [
           { required: true, message: "排序不能为空", trigger: "blur" }
@@ -295,9 +295,7 @@ export default {
         liveStream: [
           { required: true, message: "视频信息不能为空", trigger: "blur" }
         ],
-        objectCode: [
-          { required: true, message: "识别物体码不能为空", trigger: "blur" }
-        ],
+        
         algorithmCode: [
           { required: true, message: "算法码不能为空", trigger: "blur" },
           
@@ -355,8 +353,8 @@ export default {
         // });
         
         //console.log(this.controlList)
-        this.mediaServerState=response.mediaServerState
-        this.analyzerServerState=response.analyzerServerState
+        this.mediaServerState=response.mediaServerState+""
+        this.analyzerServerState=response.analyzerServerState+""
         //this.total = response.total;
         this.loading = false;
          //console.log(this.form.objectCode)
@@ -420,7 +418,12 @@ export default {
       const id = row.id || this.ids
       getControl(id).then(response => {
         this.form = response.data;
-        this.form.objectCode=this.form.objectCode.split(",");
+        if (this.form.objectCode != null&&this.form.objectCode.length!=0) {
+            this.form.objectCode = this.form.objectCode.split(","); 
+          }else{
+            this.form.objectCode = [];
+          }
+        //this.form.objectCode=this.form.objectCode.split(",");
         this.form.liveStream=this.form.streamApp+"/"+this.form.streamName
         this.open = true;
         this.title = "修改识别参数";

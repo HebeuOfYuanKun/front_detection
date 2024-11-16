@@ -24,7 +24,7 @@
           <el-checkbox-button
             label="person"
           >未戴安全帽</el-checkbox-button>
-          <el-checkbox-button label="smoke" name="type">烟情</el-checkbox-button></el-checkbox-button>
+          <el-checkbox-button label="smoke" name="type">烟情</el-checkbox-button>
           <el-checkbox-button label="fire" name="type">火情</el-checkbox-button>
         </el-checkbox-group>
       </el-form-item>
@@ -233,11 +233,6 @@ export default {
     return {
       // 根路径
       baseURL: process.env.VUE_APP_BASE_API,
-      state: [
-        { label: "未处理", value: "1" },
-        { label: "已处理", value: "2" },
-        { label: "已忽略", value: "3" },
-      ],
       // 遮罩层
       loading: true,
       // 选中数组

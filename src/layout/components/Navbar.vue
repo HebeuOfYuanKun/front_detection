@@ -10,7 +10,13 @@
         <search id="header-search" class="right-menu-item" />
 
         <screenfull id="screenfull" class="right-menu-item hover-effect" />
-
+        <el-tooltip content="可视化大屏" effect="dark" placement="bottom">
+          <div class="right-menu-item hover-effect" >
+            <router-link target="_blank" :to="{path:'/bigscreen'}">
+              <svg-icon icon-class="dashboard"/>
+            </router-link>
+          </div>
+        </el-tooltip>
         <el-tooltip content="布局大小" effect="dark" placement="bottom">
           <size-select id="size-select" class="right-menu-item hover-effect" />
         </el-tooltip>
