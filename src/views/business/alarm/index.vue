@@ -360,8 +360,10 @@ export default {
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
+      
+      const unsafeid = row.id || this.ids;
       this.reset();
-      const unsafeid = row.unsafeid || this.ids;
+      console.log(row)
       getInfo(unsafeid).then((response) => {
         this.form = response.data;
         this.open = true;
