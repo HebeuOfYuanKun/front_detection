@@ -361,7 +361,7 @@ export default {
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();
-      const unsafeid = row.unsafeid || this.ids;
+      const unsafeid = row.id || this.ids;
       getInfo(unsafeid).then((response) => {
         this.form = response.data;
         this.open = true;

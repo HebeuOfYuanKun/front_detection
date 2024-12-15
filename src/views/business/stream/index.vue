@@ -45,7 +45,7 @@
       <el-table-column
         label="入口带宽"
         align="center"
-        prop="produce_speed"
+        prop="produceSpeed"
         width="160"
       >
     
